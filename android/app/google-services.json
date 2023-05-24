@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "313227149450",
+    "project_id": "thepilot-api",
+    "storage_bucket": "thepilot-api.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:313227149450:android:d100f9491eb142d77e6d73",
+        "android_client_info": {
+          "package_name": "app.thepilot.tickets.the_pilot_ticketing_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "313227149450-i9ohq9hg0dueguo9ootrefqnpqt29clq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLMCXFIzZ00lQo20Png2JJ6QffBGLqDOs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "313227149450-i9ohq9hg0dueguo9ootrefqnpqt29clq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "313227149450-7riagna30rpsa857fou0n7vus2j25hum.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.thepilot.tickets.thePilotTicketingApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

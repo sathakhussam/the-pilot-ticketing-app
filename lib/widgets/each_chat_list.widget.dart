@@ -6,9 +6,11 @@ class EachChatList extends StatelessWidget {
   final String imageUrl;
   final String username;
   final String userId;
+  final String ticketId;
   final String finalMessage;
   final String timeInString;
   final String unseenChats;
+  final Function recallFunc;
 
   const EachChatList({
     required this.imageUrl,
@@ -17,6 +19,8 @@ class EachChatList extends StatelessWidget {
     required this.timeInString,
     required this.unseenChats,
     required this.userId,
+    required this.ticketId,
+    required this.recallFunc,
     Key? key,
   }) : super(key: key);
 
@@ -31,7 +35,8 @@ class EachChatList extends StatelessWidget {
                       name: username,
                       userId: userId,
                       imageUrl: imageUrl,
-                    )));
+                      ticketId: ticketId,
+                    ))).then((value) => recallFunc());
       },
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
@@ -48,9 +53,14 @@ class EachChatList extends StatelessWidget {
                   backgroundColor: Colors.grey,
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(28.0),
-                      child: Image.network(
-                        imageUrl,
-                      )),
+                      child: imageUrl != ''
+                          ? Image.network(
+                              imageUrl,
+                            )
+                          : CircleAvatar(
+                              radius: 32.0,
+                              backgroundColor: Color(0xff333333),
+                            )),
                 ),
                 SizedBox(width: 12.0),
                 SizedBox(
@@ -94,18 +104,20 @@ class EachChatList extends StatelessWidget {
                       fontWeight: FontWeight.w600),
                 ),
                 SizedBox(height: 4.0),
-                CircleAvatar(
-                  backgroundColor: Color(0xff246BFD),
-                  radius: 10.0,
-                  child: Text(
-                    unseenChats,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10.0,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
+                unseenChats != '0'
+                    ? CircleAvatar(
+                        backgroundColor: Color(0xff246BFD),
+                        radius: 10.0,
+                        child: Text(
+                          unseenChats,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10.0,
+                              overflow: TextOverflow.ellipsis,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      )
+                    : SizedBox(),
               ],
             )
           ],

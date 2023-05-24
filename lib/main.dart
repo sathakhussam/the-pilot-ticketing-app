@@ -8,6 +8,8 @@ import 'package:the_pilot_ticketing_app/pages/home.page.dart';
 import 'package:the_pilot_ticketing_app/pages/login.page.dart';
 import 'package:the_pilot_ticketing_app/providers/authorization.dart';
 import 'package:the_pilot_ticketing_app/providers/tickets.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 // Navigator.pushReplacementNamed(context, Routes.HOME);
 
@@ -15,6 +17,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('setting');
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,

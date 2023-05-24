@@ -5,15 +5,13 @@ import 'package:http/http.dart' as http;
 
 class ThePilotApi {
   User? user;
-  final String url = 'http://192.168.43.109:3000/api/v1/';
+  final String url = 'http://139.59.38.60/api/v1/';
 
   loginUser(String email, String password) {
     return http.post(Uri.parse('${url}users/login'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          "email": email,
-          "password": password,
-        }));
+        body: jsonEncode(
+            {"email": email, "password": password, 'firebaseToken': 'hi'}));
   }
 
   Future<String> getTickets() async {
@@ -23,6 +21,39 @@ class ThePilotApi {
     });
 
     if (resp.statusCode == 200) {
+      print(resp.body);
+      return resp.body;
+    } else {
+      print(resp.body);
+      throw Exception('Failed to get tickets');
+    }
+  }
+
+  Future<String> resolveTicket(String ticketId) async {
+    var resp = await http.put(Uri.parse('${url}ticket/${ticketId}'), headers: {
+      'Content-Type': 'application/json',
+      'authorization': 'Bearer ${user?.token}'
+    });
+
+    if (resp.statusCode == 200) {
+      print(resp.body);
+      return resp.body;
+    } else {
+      print(resp.body);
+      throw Exception('Failed to get tickets');
+    }
+  }
+
+  Future<String> sendMessage(String ticketId, String msg) async {
+    var resp = await http.post(Uri.parse('${url}ticket/${ticketId}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': 'Bearer ${user?.token}'
+        },
+        body: jsonEncode({"message": msg}));
+
+    if (resp.statusCode == 200) {
+      print(resp.body);
       return resp.body;
     } else {
       print(resp.body);

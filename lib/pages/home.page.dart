@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   var unresolvedTickets;
   @override
   void initState() {
+    print('new init');
     // TODO: implement initState
     Future.delayed(Duration.zero, () {
       Provider.of<Authorization>(context, listen: false)
@@ -49,9 +50,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  setUpTimedFetch() {
-    Timer.periodic(Duration(milliseconds: 5000), (timer) {
-      // Provider.of<Tickets>(context). api.getTickets();
+  Future<void> fetchTicketsAgain() async {
+    setState(() {
+      tickets = api.getTickets();
     });
   }
 
@@ -93,34 +94,43 @@ class _HomePageState extends State<HomePage> {
                 // Provider.of<Tickets>(context, listen: false)
                 //     .setUnresolvedTickets(unresolvedTickets);
                 return Expanded(
-                  child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: Provider.of<Tickets>(context).unresolved
-                          ? unresolvedTickets.length
-                          : resolvedTickets.length,
-                      itemBuilder: (context, index) => EachChatList(
-                            imageUrl: Provider.of<Tickets>(context).unresolved
-                                ? unresolvedTickets[index].user.profileUrl
-                                : resolvedTickets[index].user.profileUrl,
-                            username: Provider.of<Tickets>(context).unresolved
-                                ? '${unresolvedTickets[index].subject} ${unresolvedTickets[index].user.firstName}'
-                                : '${resolvedTickets[index].subject} ${resolvedTickets[index].user.firstName}',
-                            finalMessage: Provider.of<Tickets>(context)
-                                    .unresolved
-                                ? unresolvedTickets[index].finalMessage.content
-                                : resolvedTickets[index].finalMessage.content,
-                            timeInString: Provider.of<Tickets>(context)
-                                    .unresolved
-                                ? unresolvedTickets[index].finalMessage.sentAt
-                                : resolvedTickets[index].finalMessage.sentAt,
-                            unseenChats:
-                                Provider.of<Tickets>(context).unresolved
-                                    ? unresolvedTickets[index].unseenMessages
-                                    : resolvedTickets[index].unseenMessages,
-                            userId: Provider.of<Tickets>(context).unresolved
-                                ? unresolvedTickets[index].user.userId
-                                : resolvedTickets[index].user.userId,
-                          )),
+                  child: RefreshIndicator(
+                    onRefresh: fetchTicketsAgain,
+                    child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: Provider.of<Tickets>(context).unresolved
+                            ? unresolvedTickets.length
+                            : resolvedTickets.length,
+                        itemBuilder: (context, index) => EachChatList(
+                              imageUrl: Provider.of<Tickets>(context).unresolved
+                                  ? unresolvedTickets[index].user.profileUrl
+                                  : resolvedTickets[index].user.profileUrl,
+                              username: Provider.of<Tickets>(context).unresolved
+                                  ? '${unresolvedTickets[index].subject} ${unresolvedTickets[index].user.firstName}'
+                                  : '${resolvedTickets[index].subject} ${resolvedTickets[index].user.firstName}',
+                              finalMessage: Provider.of<Tickets>(context)
+                                      .unresolved
+                                  ? unresolvedTickets[index]
+                                      .finalMessage
+                                      .content
+                                  : resolvedTickets[index].finalMessage.content,
+                              timeInString: Provider.of<Tickets>(context)
+                                      .unresolved
+                                  ? unresolvedTickets[index].finalMessage.sentAt
+                                  : resolvedTickets[index].finalMessage.sentAt,
+                              unseenChats:
+                                  Provider.of<Tickets>(context).unresolved
+                                      ? unresolvedTickets[index].unseenMessages
+                                      : resolvedTickets[index].unseenMessages,
+                              userId: Provider.of<Tickets>(context).unresolved
+                                  ? unresolvedTickets[index].user.userId
+                                  : resolvedTickets[index].user.userId,
+                              ticketId: Provider.of<Tickets>(context).unresolved
+                                  ? unresolvedTickets[index].id
+                                  : resolvedTickets[index].id,
+                              recallFunc: fetchTicketsAgain,
+                            )),
+                  ),
                 );
               } else if (snapshot.hasError) {
                 print(snapshot.error);
