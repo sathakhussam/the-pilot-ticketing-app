@@ -17,8 +17,6 @@ class ThePilotApi {
     String? token = await firebaseMessaging.getToken();
 
     token ??= "No Token";
-    print("LOOK HERE");
-    print(token);
     return http.post(Uri.parse('${url}users/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
@@ -32,10 +30,8 @@ class ThePilotApi {
     });
 
     if (resp.statusCode == 200) {
-      print(resp.body);
       return resp.body;
     } else {
-      print(resp.body);
       throw Exception('Failed to get tickets');
     }
   }
@@ -47,10 +43,8 @@ class ThePilotApi {
     });
 
     if (resp.statusCode == 200) {
-      print(resp.body);
       return resp.body;
     } else {
-      print(resp.body);
       throw Exception('Failed to get tickets');
     }
   }
@@ -78,7 +72,6 @@ class ThePilotApi {
         if (response.statusCode == 200) {
           return await response.stream.bytesToString();
         } else {
-          print(await response.stream.bytesToString());
           throw Exception('Failed to send message with image');
         }
       } catch (e) {
@@ -102,14 +95,11 @@ class ThePilotApi {
         );
 
         if (resp.statusCode == 200) {
-          print(resp.body);
           return resp.body;
         } else {
-          print(resp.body);
           throw Exception('Failed to send message');
         }
       } catch (e) {
-        print('Error sending message: $e');
         final snackBar = SnackBar(
           content: Text('Failed to send message. Please try again later.'),
         );

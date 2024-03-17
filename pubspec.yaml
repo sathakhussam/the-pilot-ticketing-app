@@ -43,6 +43,7 @@ dependencies:
   firebase_messaging: ^14.7.19
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.13.1"
   flutter_test:
     sdk: flutter
 
@@ -94,3 +95,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+# flutter_icons:
+#   android: true
+#   ios: true
+#   image_path: "assets/images/logo.png"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo-bg.png"

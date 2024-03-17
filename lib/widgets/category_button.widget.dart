@@ -31,7 +31,6 @@ class _CategoryButtonState extends State<CategoryButton> {
         InkWell(
           onTap: () {
             Provider.of<Tickets>(context, listen: false).changeUnresolved(true);
-            print(Provider.of<Tickets>(context, listen: false).unresolved);
           },
           child: Material(
             elevation: Provider.of<Tickets>(context).unresolved ? 10.0 : 0,
@@ -50,7 +49,6 @@ class _CategoryButtonState extends State<CategoryButton> {
           onTap: () {
             Provider.of<Tickets>(context, listen: false)
                 .changeUnresolved(false);
-            print(Provider.of<Tickets>(context, listen: false).unresolved);
           },
           child: Material(
             elevation: !Provider.of<Tickets>(context).unresolved ? 10.0 : 0,

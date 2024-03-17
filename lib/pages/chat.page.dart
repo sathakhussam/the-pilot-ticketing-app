@@ -36,8 +36,7 @@ class _ChatPageState extends State<ChatPage> {
   var intervalBetween = 5;
   Stream<http.Response> getMessages() async* {
     yield* Stream.periodic(Duration(seconds: intervalBetween), (_) {
-      print('p');
-      print(pickedFile);
+      // psrint('p');
 
       return http.get(
           Uri.parse('http://139.59.38.60/api/v1/ticket/${widget.ticketId}'),
@@ -67,11 +66,7 @@ class _ChatPageState extends State<ChatPage> {
 
     if (pickedFile != null) {
       // You can now use the pickedFile to upload the image to your desired destination
-      print('Image picked: ${pickedFile?.path}');
-      print(pickedFile);
-    } else {
-      print('No image selected.');
-    }
+    } else {}
   }
 
   @override
@@ -165,9 +160,7 @@ class _ChatPageState extends State<ChatPage> {
                 try {
                   await api.resolveTicket(widget.ticketId);
                   Navigator.pop(context, true);
-                } catch (e) {
-                  print(e);
-                }
+                } catch (e) {}
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -240,12 +233,9 @@ class _ChatPageState extends State<ChatPage> {
                 } catch (e) {}
               } else {
                 api.sendMessage(widget.ticketId, msg, context);
-                print('No image selected.');
               }
 
-              Timer.run(() => print('object'));
               Timer(Duration(seconds: 2), () {
-                print('object 2');
                 setState(() {
                   intervalBetween = 5;
                 });

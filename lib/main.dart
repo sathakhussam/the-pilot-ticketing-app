@@ -9,8 +9,6 @@ import 'package:the_pilot_ticketing_app/providers/tickets.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-// Navigator.pushReplacementNamed(context, Routes.HOME);
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -29,14 +27,9 @@ void main() async {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -45,17 +38,55 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: ((context) => Authorization())),
       ],
       child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData.light().copyWith(
-            pageTransitionsTheme: const PageTransitionsTheme(
-              builders: <TargetPlatform, PageTransitionsBuilder>{
-                TargetPlatform.android: ZoomPageTransitionsBuilder(),
-              },
-            ),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.light().copyWith(
+          pageTransitionsTheme: const PageTransitionsTheme(
+            builders: <TargetPlatform, PageTransitionsBuilder>{
+              TargetPlatform.android: ZoomPageTransitionsBuilder(),
+            },
           ),
-          home: Hive.box('setting').get('user') == null
-              ? const LoginPage()
-              : HomePage()),
+        ),
+        home: const SplashScreen(), // Use SplashScreen as the initial route
+      ),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _navigate();
+  }
+
+  // Navigate to the appropriate screen after some delay
+  Future<void> _navigate() async {
+    await Future.delayed(
+        const Duration(seconds: 2)); // Adjust duration as needed
+    if (Hive.box('setting').get('user') == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: const CircularProgressIndicator(color: Colors.blue),
     );
   }
 }

@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   var unresolvedTickets;
   @override
   void initState() {
-    print('new init');
     // TODO: implement initState
     Future.delayed(Duration.zero, () {
       Provider.of<Authorization>(context, listen: false)
@@ -133,7 +132,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               } else if (snapshot.hasError) {
-                print(snapshot.error);
                 return Expanded(
                   child: Center(
                     child: Text('Sorry, failed to load data.'),
