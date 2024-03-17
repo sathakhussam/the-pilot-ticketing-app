@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:the_pilot_ticketing_app/constants/colors.dart';
 import 'package:the_pilot_ticketing_app/models/message.dart';
@@ -35,6 +37,8 @@ class _ChatPageState extends State<ChatPage> {
   Stream<http.Response> getMessages() async* {
     yield* Stream.periodic(Duration(seconds: intervalBetween), (_) {
       print('p');
+      print(pickedFile);
+
       return http.get(
           Uri.parse('http://139.59.38.60/api/v1/ticket/${widget.ticketId}'),
           headers: {
@@ -43,6 +47,31 @@ class _ChatPageState extends State<ChatPage> {
                 'Bearer ${Provider.of<Authorization>(context, listen: false).user?.token}'
           });
     }).asyncMap((event) async => await event);
+  }
+
+  XFile? pickedFile;
+
+  Future<void> _uploadImage() async {
+    if (pickedFile != null) {
+      setState(() {
+        pickedFile = null;
+      });
+      return;
+    }
+
+    final ImagePicker _picker = ImagePicker();
+    final tp = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      pickedFile = tp;
+    });
+
+    if (pickedFile != null) {
+      // You can now use the pickedFile to upload the image to your desired destination
+      print('Image picked: ${pickedFile?.path}');
+      print(pickedFile);
+    } else {
+      print('No image selected.');
+    }
   }
 
   @override
@@ -62,40 +91,50 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Define a scroll controller
+    ScrollController _scrollController = ScrollController();
+
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: customAppBar(),
-        bottomSheet: bottomSheet(context),
-        body: StreamBuilder<http.Response>(
-          stream: getMessages(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(
-                child: Text("Sorry There Seems To Be A Problem"),
-              );
-            } else if (snapshot.hasData) {
-              var body = snapshot.data?.body.runtimeType == String
-                  ? snapshot.data?.body
-                  : "{}";
-              var respDecoded = jsonDecode(body.toString());
-              var messages =
-                  respDecoded['data'].map((v) => Message.fromJson(v)).toList();
-              return ListView.builder(
-                itemCount: messages.length,
-                itemBuilder: (context, index) => EachMessage(
-                    byUser: messages[index].by != "user",
-                    message: messages[index].content,
-                    filePath: messages[index].filePath.runtimeType == String
-                        ? messages[index].filePath
-                        : "",
-                    seen: messages[index].seen,
-                    last: messages.length - 1 == index ? true : false,
-                    timeSent: messages[index].sentAt),
-              );
-            }
-            return Center(child: const CircularProgressIndicator());
-          },
-        ));
+      backgroundColor: Colors.white,
+      appBar: customAppBar(),
+      bottomSheet: bottomSheet(context),
+      body: StreamBuilder<http.Response>(
+        stream: getMessages(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text("Sorry There Seems To Be A Problem"),
+            );
+          } else if (snapshot.hasData) {
+            var body = snapshot.data?.body.runtimeType == String
+                ? snapshot.data?.body
+                : "{}";
+            var respDecoded = jsonDecode(body.toString());
+            var messages =
+                respDecoded['data'].map((v) => Message.fromJson(v)).toList();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollController
+                  .jumpTo(_scrollController.position.maxScrollExtent);
+            });
+            return ListView.builder(
+              controller: _scrollController,
+              itemCount: messages.length,
+              itemBuilder: (context, index) => EachMessage(
+                byUser: messages[index].by != "user",
+                message: messages[index].content,
+                filePath: messages[index].filePath.runtimeType == String
+                    ? messages[index].filePath
+                    : "",
+                seen: messages[index].seen,
+                last: messages.length - 1 == index ? true : false,
+                timeSent: messages[index].sentAt,
+              ),
+            );
+          }
+          return Center(child: const CircularProgressIndicator());
+        },
+      ),
+    );
   }
 
   AppBar customAppBar() {
@@ -124,7 +163,7 @@ class _ChatPageState extends State<ChatPage> {
               splashColor: Colors.grey,
               onTap: () async {
                 try {
-                  // await api.resolveTicket(widget.ticketId);
+                  await api.resolveTicket(widget.ticketId);
                   Navigator.pop(context, true);
                 } catch (e) {
                   print(e);
@@ -171,18 +210,16 @@ class _ChatPageState extends State<ChatPage> {
               children: [
                 InputFieldTextCustom(context),
                 const SizedBox(width: 8.0),
-                // InkWell(
-                //   onTap: () {
-                //     print('object');
-                //   },
-                //   child: const Padding(
-                //     padding: EdgeInsets.all(8.0),
-                //     child: Icon(
-                //       Icons.attachment,
-                //       size: 24.0,
-                //     ),
-                //   ),
-                // ),
+                InkWell(
+                  onTap: _uploadImage,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(
+                      pickedFile != null ? Icons.close : Icons.attachment,
+                      size: 24.0,
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 8.0),
               ],
             ),
@@ -195,7 +232,17 @@ class _ChatPageState extends State<ChatPage> {
                 intervalBetween = 0;
                 message.text = '';
               });
-              api.sendMessage(widget.ticketId, msg);
+              if (pickedFile != null) {
+                try {
+                  // Call the sendMessage function with the picked image file
+                  api.sendMessage(widget.ticketId, msg, context,
+                      image: File(pickedFile!.path));
+                } catch (e) {}
+              } else {
+                api.sendMessage(widget.ticketId, msg, context);
+                print('No image selected.');
+              }
+
               Timer.run(() => print('object'));
               Timer(Duration(seconds: 2), () {
                 print('object 2');
@@ -208,7 +255,7 @@ class _ChatPageState extends State<ChatPage> {
               radius: 26.0,
               child: Icon(Icons.send),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -228,9 +275,8 @@ class _ChatPageState extends State<ChatPage> {
           expands: true,
           textAlignVertical: TextAlignVertical.center,
           decoration: const InputDecoration.collapsed(
-            hintText: 'Type Here',
-          ),
-          cursorColor: Colors.white,
+              hintText: 'Type Here', hintStyle: TextStyle(color: Colors.grey)),
+          cursorColor: Colors.black,
         ),
       ),
     );

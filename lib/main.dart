@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:the_pilot_ticketing_app/pages/chat.page.dart';
 import 'package:the_pilot_ticketing_app/pages/home.page.dart';
 import 'package:the_pilot_ticketing_app/pages/login.page.dart';
 import 'package:the_pilot_ticketing_app/providers/authorization.dart';
